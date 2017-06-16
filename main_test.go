@@ -1,12 +1,12 @@
 package main_test
 
 import (
-	"os"
-	"testing"
+	"encoding/json"
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"encoding/json"
+	"os"
+	"testing"
 
 	"github.com/dranidis/build-test-rest"
 )
