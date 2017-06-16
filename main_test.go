@@ -110,6 +110,7 @@ func TestCreateProduct(t *testing.T) {
 
 	if m["name"] != "test product" {
 		t.Errorf("Expected product name to be 'test product'. Got '%v'", m["name"])
+		t.Errorf("%v", m["error"])
 	}
 	if m["price"] != 11.22 {
 		t.Errorf("Expected product price to be '11.22'. Got '%v'", m["price"])

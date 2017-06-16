@@ -25,7 +25,11 @@ func (p *product) deleteProduct(db *sql.DB) error {
 }
 
 func (p *product) createProduct(db *sql.DB) error {
-	return errors.New("Not implemented")
+	if err := db.QueryRow("INSERT INTO products(name, price) VALUES($1, $2) RETURNING id",
+		p.Name, p.Price).Scan(&p.ID); err != nil {
+		return err
+	}
+	return nil
 }
 
 func getProducts(db *sql.DB, start, count int) ([]product, error) {
