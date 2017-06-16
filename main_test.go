@@ -146,6 +146,33 @@ func TestUpdateProduct(t *testing.T) {
 	}
 }
 
+func TestDeleteProduct(t *testing.T) {
+	clearTable()
+	addProducts(1)
+
+	req, _ := http.NewRequest("GET", "/product/1", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	req, _ = http.NewRequest("DELETE", "/product/1", nil)
+	response = executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var m map[string]interface{}
+	json.Unmarshal(response.Body.Bytes(), &m)
+	if m["error"] != nil {
+		t.Errorf("%v", m["error"])
+	}
+
+	req, _ = http.NewRequest("GET", "/product/1", nil)
+	response = executeRequest(req)
+
+	checkResponseCode(t, http.StatusNotFound, response.Code)
+
+}
+
 func checkResponseCode(t *testing.T, expected, actual int) {
 	if expected != actual {
 		t.Errorf("Expected response code %d. Got %d\n", expected, actual)

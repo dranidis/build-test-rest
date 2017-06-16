@@ -38,6 +38,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.getProduct).Methods("GET")
 	a.Router.HandleFunc("/product", a.createProduct).Methods("POST")
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.updateProduct).Methods("PUT")
+	a.Router.HandleFunc("/product/{id:[0-9]+}", a.deleteProduct).Methods("DELETE")
 }
 
 func (a *App) getProducts(w http.ResponseWriter, r *http.Request) {
@@ -107,6 +108,25 @@ func (a *App) updateProduct(w http.ResponseWriter, r *http.Request) {
 	p.ID = id
 
 	if err := p.updateProduct(a.DB); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, p)
+}
+
+func (a *App) deleteProduct(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid product ID")
+		return
+	}
+
+	var p product
+	p.ID = id
+
+	if err := p.deleteProduct(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
