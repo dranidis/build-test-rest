@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 	"strconv"
+	"bytes"
 
 	"github.com/dranidis/build-test-rest"
 )
@@ -92,6 +93,30 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 	a.Router.ServeHTTP(rr, req)
 
 	return rr
+}
+
+func TestCreateProduct(t *testing.T) {
+	clearTable()
+
+	payload := []byte(`{"name":"test product","price":11.22}`)
+
+	req, _ := http.NewRequest("POST", "/product", bytes.NewBuffer(payload))
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusCreated, response.Code)
+
+	var m map[string]interface{}
+	json.Unmarshal(response.Body.Bytes(), &m)
+
+	if m["name"] != "test product" {
+		t.Errorf("Expected product name to be 'test product'. Got '%v'", m["name"])
+	}
+	if m["price"] != 11.22 {
+		t.Errorf("Expected product price to be '11.22'. Got '%v'", m["price"])
+	}
+	if m["id"] != 1.0 {
+		t.Errorf("Expected product ID to be '1'. Got '%v'", m["id"])
+	}
 }
 
 func checkResponseCode(t *testing.T, expected, actual int) {
