@@ -120,6 +120,32 @@ func TestCreateProduct(t *testing.T) {
 	}
 }
 
+func TestUpdateProduct(t *testing.T) {
+	clearTable()
+	addProducts(1)
+
+	payload := []byte(`{"name":"test product - updated name","price":11.22}`)
+
+	req, _ := http.NewRequest("PUT", "/product/1", bytes.NewBuffer(payload))
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+
+	var m map[string]interface{}
+	json.Unmarshal(response.Body.Bytes(), &m)
+
+	if m["id"] != 1.0 {
+		t.Errorf("Expected product id to remain the same. Got '%v'", m["id"])
+		t.Errorf("%v", m["error"])
+	}
+	if m["price"] != 11.22 {
+		t.Errorf("Expected product price to be updated to '11.22'. Got '%v'", m["price"])
+	}
+	if m["name"] != "test product - updated name" {
+		t.Errorf("Expected product name to be 'test product - updated name'. Got '%v'", m["name"])
+	}
+}
+
 func checkResponseCode(t *testing.T, expected, actual int) {
 	if expected != actual {
 		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
