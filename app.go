@@ -31,7 +31,9 @@ func (a *App) Initialize(user, password, dbname string) {
 	a.initializeRoutes()
 }
 
-func (a *App) Run(addr string) {}
+func (a *App) Run(addr string) {
+	log.Fatal(http.ListenAndServe(addr, a.Router))
+}
 
 func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/products", a.getProducts).Methods("GET")
@@ -42,7 +44,17 @@ func (a *App) initializeRoutes() {
 }
 
 func (a *App) getProducts(w http.ResponseWriter, r *http.Request) {
-	products, err := getProducts(a.DB, 0, 10)
+	count, _ := strconv.Atoi(r.FormValue("count"))
+	start, _ := strconv.Atoi(r.FormValue("start"))
+
+	if count > 10 || count < 1 {
+		count = 10
+	}
+	if start < 0 {
+		start = 0
+	}
+
+	products, err := getProducts(a.DB, start, count)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
