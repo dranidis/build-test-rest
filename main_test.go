@@ -1,14 +1,14 @@
 package main_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"testing"
 	"strconv"
-	"bytes"
+	"testing"
 
 	"github.com/dranidis/build-test-rest"
 )
@@ -158,6 +158,6 @@ func addProducts(count int) {
 	}
 
 	for i := 0; i < count; i++ {
-		a.DB.Exec("INSERT INTO products(name, price) VALUES ($1, $2)", "Product " + strconv.Itoa(i), (i+1.0)*10)
+		a.DB.Exec("INSERT INTO products(name, price) VALUES ($1, $2)", "Product "+strconv.Itoa(i), (i+1.0)*10)
 	}
 }
